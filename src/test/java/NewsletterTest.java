@@ -1,4 +1,5 @@
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.graphene.spi.annotations.Page;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -14,7 +15,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Arquillian.class)
 public class NewsletterTest {
 
-    Newsletter newsletter;
+    @Page
+    private Newsletter newsletter;
 
     @Drone
     WebDriver driver;
@@ -29,7 +31,6 @@ public class NewsletterTest {
     @Test
     public void testNewsletterEmptyInput()
     {
-        newsletter = PageFactory.initElements(driver, Newsletter.class);
         //when
         newsletter.setInput("");
         guardHttp(newsletter).submit();
