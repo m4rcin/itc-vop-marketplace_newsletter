@@ -1,28 +1,57 @@
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
 import static org.jboss.arquillian.graphene.Graphene.guardHttp;
+import java.util.List;
 
-@RunWith(Arquillian.class)
 public class PsychicMarketplace {
 
-    @FindBy(xpath = "//*[@id=\"wrap\"]/div[2]/div[4]/div[2]/div[2]")
-    private WebElement productsRowOne;
-    @FindBy(xpath = "//*[@id=\"row_8\"]")
-    private WebElement productsRowTwo;
+    @FindBy(tagName = "li")
+    private List<Product> products;
 
-    @FindBy(xpath = "//*[@id=\"wrap\"]/div[2]/div[4]/div[2]/div[2]/li[1]/a")
-    private WebElement productBox;
-
-    public WebElement getProductBox()
+    public String getProductUrl(int productNumber)
     {
-        return productBox;
+        return products.get(productNumber).getUrl();
     }
 
-    public void productBoxClick()
+    public String getProductImgUrl(int productNumer)
     {
-        guardHttp(productBox).click();
+        return products.get(productNumer).getImgUrl();
+    }
+
+    public int getProductId(int productNumber)
+    {
+        return products.get(productNumber).getId();
+    }
+
+    public void clickProduct(int productNumber)
+    {
+        products.get(productNumber).clickProduct();
+    }
+
+    public  static class Product {
+        @FindBy(tagName = "a")
+        private WebElement product;
+        @FindBy(tagName = "img")
+        private WebElement image;
+
+        public String getUrl()
+        {
+            return product.getAttribute("href");
+        }
+        public Integer getId()
+        {
+            String productId = product.getAttribute("href").replaceAll("[https://itcrowd.pl/vop/product/]", "");
+            return Integer.parseInt(productId);
+        }
+
+        public String getImgUrl()
+        {
+            return image.getAttribute("src");
+        }
+
+        public void clickProduct()
+        {
+            guardHttp(product).click();
+        }
     }
 }

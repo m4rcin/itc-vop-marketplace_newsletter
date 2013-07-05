@@ -3,14 +3,13 @@ import org.jboss.arquillian.graphene.spi.annotations.Page;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.jboss.arquillian.junit.Arquillian;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.PageFactory;
-
-import static org.jboss.arquillian.graphene.Graphene.guardHttp;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import org.jboss.arquillian.junit.Arquillian;
+import static org.jboss.arquillian.graphene.Graphene.guardHttp;
+import org.openqa.selenium.WebDriver;
+import java.util.UUID;
+
 
 @RunWith(Arquillian.class)
 public class NewsletterTest {
@@ -21,19 +20,13 @@ public class NewsletterTest {
     @Drone
     WebDriver driver;
 
-    @Before
-    public void testInitialization()
-    {
-        driver.navigate().to("https://itcrowd.pl/vop/");
-
-    }
-
     @Test
     public void testNewsletterEmptyInput()
     {
         //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
         newsletter.setInput("");
-        guardHttp(newsletter).submit();
+        newsletter.clickSignUp();
 
         //then
         assertEquals("Enter your email here to subscribe", newsletter.getPopUpText());
@@ -43,8 +36,9 @@ public class NewsletterTest {
     public void testNewsletterWrongEmail()
     {
         //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
         newsletter.setInput("aaa");
-        guardHttp(newsletter).submit();
+        newsletter.clickSignUp();
 
         //then
         assertEquals("not a well-formed email address", newsletter.getPopUpText());
@@ -53,23 +47,41 @@ public class NewsletterTest {
     @Test
     public void testNewsletterValidEmail()
     {
+        String randomEmail = UUID.randomUUID().toString() + "@gmail.com";
         //when
-        newsletter.setInput("emailik@gmail.com");
-        guardHttp(newsletter).submit();
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput(randomEmail);
+        newsletter.clickSignUp();
 
         //then
         assertEquals("Your address has been added to subscriber list. Check your email and activate subscription.", newsletter.getPopUpText());
     }
 
     @Test
+    public void testNewsletterDoubleSignUp()
+    {
+        //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput("test123@gmail.com");
+        newsletter.clickSignUp();
+        newsletter.setInput("test123@gmail.com");
+        newsletter.clickSignUp();
+
+        //then
+        assertEquals("Sorry, but mail can not be send, try later", newsletter.getPopUpText());
+    }
+
+    @Test
     public void testNewsletterPopUpClick()
     {
         //when
-        newsletter.setInput("aaa");
-        guardHttp(newsletter).submit();
-        guardHttp(newsletter).popUpClick();
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput("");
+        newsletter.clickSignUp();
+        newsletter.popUpClick();
+
         //then
-        assertTrue(newsletter.isPopUpVisible());
+        assertFalse(newsletter.isPopUpVisible());
     }
 }
 
@@ -85,7 +97,7 @@ Poprzednie testy, bez uzycia Page Object
         driver.get("https://itcrowd.pl/vop/");
         WebElement inputNewsletter = driver.findElement(By.id("j_idt104:i"));
         inputNewsletter.sendKeys("");
-        guardHttp(inputNewsletter).submit();
+        guardHttp(inputNewsletter).clickSignUp();
         WebElement PopupInfo = driver.findElement(By.className("rf-ntf-det"));
         String NewsletterStatus = PopupInfo.getText();
 
