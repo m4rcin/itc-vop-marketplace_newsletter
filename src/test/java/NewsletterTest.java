@@ -1,61 +1,23 @@
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.spi.annotations.Page;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import org.jboss.arquillian.junit.Arquillian;
-import static org.jboss.arquillian.graphene.Graphene.guardHttp;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
+
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(Arquillian.class)
 public class NewsletterTest {
 
-    @Page
-    private Newsletter newsletter;
-
     @Drone
     WebDriver driver;
 
-    @Test
-    public void testNewsletterEmptyInput()
-    {
-        //when
-        driver.navigate().to("https://itcrowd.pl/vop/");
-        newsletter.setInput("");
-        newsletter.clickSignUp();
-
-        //then
-        assertEquals("Enter your email here to subscribe", newsletter.getPopUpText());
-    }
-
-    @Test
-    public void testNewsletterWrongEmail()
-    {
-        //when
-        driver.navigate().to("https://itcrowd.pl/vop/");
-        newsletter.setInput("aaa");
-        newsletter.clickSignUp();
-
-        //then
-        assertEquals("not a well-formed email address", newsletter.getPopUpText());
-    }
-
-    @Test
-    public void testNewsletterValidEmail()
-    {
-        String randomEmail = UUID.randomUUID().toString() + "@gmail.com";
-        //when
-        driver.navigate().to("https://itcrowd.pl/vop/");
-        newsletter.setInput(randomEmail);
-        newsletter.clickSignUp();
-
-        //then
-        assertEquals("Your address has been added to subscriber list. Check your email and activate subscription.", newsletter.getPopUpText());
-    }
+    @Page
+    private Newsletter newsletter;
 
     @Test
     public void testNewsletterDoubleSignUp()
@@ -72,6 +34,18 @@ public class NewsletterTest {
     }
 
     @Test
+    public void testNewsletterEmptyInput()
+    {
+        //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput("");
+        newsletter.clickSignUp();
+
+        //then
+        assertEquals("Enter your email here to subscribe", newsletter.getPopUpText());
+    }
+
+    @Test
     public void testNewsletterPopUpClick()
     {
         //when
@@ -82,6 +56,31 @@ public class NewsletterTest {
 
         //then
         assertFalse(newsletter.isPopUpVisible());
+    }
+
+    @Test
+    public void testNewsletterValidEmail()
+    {
+        String randomEmail = UUID.randomUUID().toString() + "@gmail.com";
+        //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput(randomEmail);
+        newsletter.clickSignUp();
+
+        //then
+        assertEquals("Your address has been added to subscriber list. Check your email and activate subscription.", newsletter.getPopUpText());
+    }
+
+    @Test
+    public void testNewsletterWrongEmail()
+    {
+        //when
+        driver.navigate().to("https://itcrowd.pl/vop/");
+        newsletter.setInput("aaa");
+        newsletter.clickSignUp();
+
+        //then
+        assertEquals("not a well-formed email address", newsletter.getPopUpText());
     }
 }
 

@@ -1,16 +1,18 @@
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import static org.jboss.arquillian.graphene.Graphene.guardHttp;
+
 import java.util.List;
+
+import static org.jboss.arquillian.graphene.Graphene.guardHttp;
 
 public class PsychicMarketplace {
 
     @FindBy(tagName = "li")
     private List<Product> products;
 
-    public String getProductUrl(int productNumber)
+    public int getProductId(int productNumber)
     {
-        return products.get(productNumber).getUrl();
+        return products.get(productNumber).getId();
     }
 
     public String getProductImgUrl(int productNumer)
@@ -18,9 +20,9 @@ public class PsychicMarketplace {
         return products.get(productNumer).getImgUrl();
     }
 
-    public int getProductId(int productNumber)
+    public String getProductUrl(int productNumber)
     {
-        return products.get(productNumber).getId();
+        return products.get(productNumber).getUrl();
     }
 
     public void clickProduct(int productNumber)
@@ -28,16 +30,14 @@ public class PsychicMarketplace {
         products.get(productNumber).clickProduct();
     }
 
-    public  static class Product {
-        @FindBy(tagName = "a")
-        private WebElement product;
+    public static class Product {
+
         @FindBy(tagName = "img")
         private WebElement image;
 
-        public String getUrl()
-        {
-            return product.getAttribute("href");
-        }
+        @FindBy(tagName = "a")
+        private WebElement product;
+
         public Integer getId()
         {
             String productId = product.getAttribute("href").replaceAll("[https://itcrowd.pl/vop/product/]", "");
@@ -47,6 +47,11 @@ public class PsychicMarketplace {
         public String getImgUrl()
         {
             return image.getAttribute("src");
+        }
+
+        public String getUrl()
+        {
+            return product.getAttribute("href");
         }
 
         public void clickProduct()
